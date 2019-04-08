@@ -1,48 +1,52 @@
 
-# Genie CLI Demonstartion 
-I'm always on the lookout for new ways to help network engineers get into automation in a very easy, low code, low pre-req way.  In this search I don't think I've ever been as excited or impressed with anything I've seen as much as the new Genie CLI that was added to the pyATS/Genie package with Version 19. 
+# Genie CLI Demonstartion and Lab
 
 If you haven't run across [pyATS/Genie](https://developer.cisco.com/pyats) yet, the quick description is that they are the network verification tooling developed inside Cisco for internal engineering to test releases of IOS XE, NX-OS and, IOS XR that has been released for **[anyone to use completely free](https://developer.cisco.com/docs/pyats/#!requirements)**.  
 
-I've [talked, blogged, and used](https://developer.cisco.com/netdevops/live/#s01) them for awhile now through native Python, Robot, and other interfaces.  And while I've always been impressed by the tooling, there was always a bit of a bar of konwledge required in these languages, and computer developement that made them difficult for brand new network automation engineers to feel comfortable jumping into. 
+Learn more from Hank Preston and Devnet: "I've [talked, blogged, and used](https://developer.cisco.com/netdevops/live/#s01) them for awhile now through native Python, Robot, and other interfaces.  And while I've always been impressed by the tooling, there was always a bit of a bar of konwledge required in these languages, and computer developement that made them difficult for brand new network automation engineers to feel comfortable jumping into." 
 
-Well, with the release of [Genie CLI](https://pubhub.devnetcloud.com/media/pyats-packages/docs/genie/cli/index.html) we now have an amazingly powerful **and** easy to use tool for any network engineer that can solve real problems immediately.  What problems you ask?  Well, there are many potential use cases, but the one that I think shows the power the best is this one. 
-
-> Users, or management systems, report a problem in the network. How can we find out what changed and where the problem might be? 
-
-Let's dive right in! 
 
 ## Table of Contents
 * [Preperation](#preperation)
 * [Network Topology](#network-topology)
-* [Demo 1: Users report Problem Communicating from Server-1 to Server-3](#demo-1-users-report-problem-communicating-from-server-1-to-server-3)
+* [Lab 1: Users report Problem Communicating from Server-1 to Server-3](#demo-1-users-report-problem-communicating-from-server-1-to-server-3)
 * [Key Info 1: Testbed Files and Network Devices](https://github.com/hpreston/netdevops_demos/tree/master/genie-cli-1#key-info-1-testbed-files-and-network-devices)
-* [Demo 2: Occasional Network Communication Issues on Server-1 and Server-2](#demo-2-occasional-network-communication-issues-on-server-1-and-server-2)
-* [Demo 3: What exactly is happening under the hood?](#demo-3-what-exactly-is-happening-under-the-hood)
-* [Demo 4: CLI Commands made better with Genie Parse](#demo-4-cli-commands-made-better-with-genie-parse)
-* [Demo 5: Server 2 can't communicate with anything...](#demo-5-server-2-cant-communicate-with-anything)
-* [Demo 6: Non-Optimal Traffic Patterns](#demo-6-non-optimal-traffic-patterns)
-* [Demo 7: Performance Problem... Somewhere](#demo-7-performance-problem-somewhere)
+* [Lab 2: Occasional Network Communication Issues on Server-1 and Server-2](#demo-2-occasional-network-communication-issues-on-server-1-and-server-2)
+* [Lab 3: What exactly is happening under the hood?](#demo-3-what-exactly-is-happening-under-the-hood)
+* [lab 4: CLI Commands made better with Genie Parse](#demo-4-cli-commands-made-better-with-genie-parse)
+* [lab 5: Run PyATS and Genie in your POD with CSR routers
+* 
 
 ## Preperation
+This lab can run "as is" using the following dcloud pod https://dcloud.cisco.com/ Search for Devnet Express DNAv3. Pods in dcloud are reservable for several days.
+
 We'll explain all the details as the demo goes on, but let's get setup to run these demos.  
 
-1. You'll need a workstation with Python 3.6 or 3.7 installed and functional along with Git.
-1. Clone down the code from GitHub and change into the directory for this demo. 
+
+1. On your devbox 198.18.134.48 code directory, Clone down the code from GitHub and change into the directory for this demo. 
 
 	```bash
-	git clone https://github.com/hpreston/netdevops_demos
-	cd netdevops_demos/genie-cli-1
+	git clone https://github.com/andubiel/pyats-genie.git
+	cd pyats-genie/genie-cli-1
 	```
 
 1. Create a Python 3 virtual environment, and install the requirements (pyATS and Genie) 
 
 	```
-	python3 -m venv venv 
+	sudo yum install centos-release-scl
+        sudo yum install rh-python36
+        python3.6 -m venv venv
+        source venv/bin/activate
 	pip install -r requirements.txt 
-	``` 
+	```
+	Please note you are installing the dependencies into a virtual environment. If you close the terminal session to the devbox you will need to navigate back to home/developer/code/pyats-genie/genie-cli-1 to activate your python virtual environment again.
+	
+	```
+	source venv/bin/activate
+	```
 
 1. Create the "normal" profile for the network.  This command can take up to 4 minutes to complete. You'll get a progress bar showing status as it runs. 
+Please note genie commands must be run from genie-cli-1/ directory.
 
 	```bash
 	genie learn all --testbed-file testbeds/mock_normal_tb.yaml --output tests/normal 
@@ -55,7 +59,7 @@ We'll explain all the details as the demo goes on, but let's get setup to run th
 
 All the demos will leverage this network topology. 
 
-## Demo 1: Users report Problem Communicating from Server-1 to Server-3 
+## Lab 1: Users report Problem Communicating from Server-1 to Server-3 
 
 **Situation:** You come to work with a report from the systems team that Server-1 (IP Address: 10.0.0.1) in the data center can no longer reach Server-3 (IP Address: 10.0.128.2) in the branch location. 
 
@@ -316,7 +320,7 @@ We only touched on the basics of mock devices and playback.  For more details, c
 
 * [Playback Docs](https://pubhub.devnetcloud.com/media/pyats-packages/docs/unicon/playback/index.html)
 
-## Demo 2: Occasional Network Communication Issues on Server-1 and Server-2
+## Lab 2: Occasional Network Communication Issues on Server-1 and Server-2
 
 **Situation:** You have noticed some occasional problems with some of the servers in the data center.  
 
@@ -382,7 +386,7 @@ We only touched on the basics of mock devices and playback.  For more details, c
 
 1. Probably came as no surprise that there was a configuration change to the IP address on GigabitEthernet0/3.
 
-## Demo 3: What exactly is happening under the hood? 
+## Lab 3: What exactly is happening under the hood? 
 In this demo we're going to look a bit closer at what is going on when we run the `genie` commands. 
 
 * We'll use the normal testbed for this one: [testbeds/mock_normal_tb.yaml](testbeds/mock_normal_tb.yaml)
@@ -441,7 +445,7 @@ Each of the models represents a network feature that Genie can learn.  Not every
 
 And the team behind Genie is constantly creating new models, so check back often! 
 
-## Demo 4: CLI Commands made better with Genie Parse
+## Lab 4: CLI Commands made better with Genie Parse
 In this demo we're going to step back from the overwhelming power of `genie learn` and dig in a bit to how Genie does all that learning.  
 
 We've already explored how Genie runs CLI commands and magically turns the text output into wonderful Python and JSON data structures.  This is called "parsing" and Genie comes with a [HUGE library of parsers](https://pubhub.devnetcloud.com/media/pyats-packages/docs/genie/genie_libs/#/parsers).  Let's check them out a bit.  
@@ -477,24 +481,55 @@ We've already explored how Genie runs CLI commands and magically turns the text 
 1. Take some time and run a few more parse examples.  Be wowed and amazed, it's okay.  
 
 
-## Demo 5: Server 2 can't communicate with anything...
+## Lab 5: PyATS in your own dcloud Pod
 
-**Situation:** The systems team reports problems with Server 2's network connection. 
+Let's configure some Ospf routing in our CSR routers:
+csr1
+```
+ssh admin@198.18.134.11
+password = C1sco12345
 
-**Troubleshooting with Genie CLI:** Use `genie learn` and `genie diff` to track down the problem.  Try to avoid the temptation to just jump right to `genie learn config` and see if you can find it through the operational state.  Afterall, not every network problem will be because of a configuraiton change... 
+conf t
+router ospf 100
+network 198.18.0.0 0.0.255.255 area 0
+network 10.11.0.0 0.0.0.255 area 0
+csr1(config)#int lo15
+csr1(config-if)#ip addr 10.11.0.1 255.255.255.255
+csr1(config-if)#no shut
+csr1(config-if)#
+end
+wr
+```
 
-**Hints:** Some handy models to check include `routing`, `static_routing`, `acl`, `vlan`, `interface`, `arp` 
+csr2
+```
+ssh admin@198.18.134.12
+password = C1sco12345
 
-## Demo 6: Non-Optimal Traffic Patterns
+conf t
+router ospf 100
+network 198.18.0.0 0.0.255.255 area 0
+end
+wr
+```
 
-**Situation:** The Network Ops team has noticed some odd traffic patterns across the network
+Now we can learn our two CSR routers from the Devnet Express DNAv3 Dcloud pod.
 
-**Troubleshooting with Genie CLI:** Use `genie learn` and `genie diff` to track down the problem.  Try to avoid the temptation to just jump right to `genie learn config` and see if you can find it through the operational state.  Afterall, not every network problem will be because of a configuraiton change... 
-
-**Hints:** Some handy models to check include `routing`, `static_routing`, `acl`, `vlan`, `interface`, `arp` 
-
-## Demo 7: Performance Problem... Somewhere
-
-**Situation:** Time for a bit of a hunt... there's some misconfiguration in the network... can you find it. 
-
-**Troubleshooting with Genie CLI:** Use `genie learn` and `genie diff` to track down the problem.  Try to avoid the temptation to just jump right to `genie learn config` and see if you can find it through the operational state.  Afterall, not every network problem will be because of a configuraiton change... 
+```
+genie learn all --testbed-file testbeds/mylab.yaml --output tests/mylab
+```
+Ouput truncated:
+```
+Learning '['acl', 'arp', 'bgp', 'dot1x', 'fdb', 'hsrp', 'igmp', 'interface', 'lag', 'lisp', 'lldp', 'mcast', 'mld', 'msdp', 'nd', 'ntp', 'ospf', 'pim', 'platform', 'prefix_list', 'rip', 'route_policy', 'routing', 'static_routing', 'stp', 'vlan', 'vrf', 'vxlan', 'config']' on devices '['csr1', 'csr2']'
+100%|███████████████████████████████████████████████████████████████████████| 29/29 [01:18<00:00,  1.24s/it]
++==============================================================================+
+| Genie Learn Summary for device csr1                                          |
++==============================================================================+
+|  Connected to csr1                                                           |
+|  -   Log: tests/mylab/connection_csr1.txt                                    |
+|------------------------------------------------------------------------------|
+|  Learnt feature 'acl'                                                        |
+|  -  Ops structure:  tests/mylab/acl_iosxe_csr1_ops.txt                       |
+|  -  Device Console: tests/mylab/acl_iosxe_csr1_console.txt                   |
+|------------------------------------------------------------------------------|
+```
