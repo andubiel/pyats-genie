@@ -484,9 +484,10 @@ We've already explored how Genie runs CLI commands and magically turns the text 
 ## Lab 5: PyATS in your own dcloud Pod
 
 Let's configure some Ospf routing in our CSR routers:
-csr1
+
 
 ```
+csr1
 ssh admin@198.18.134.11
 password = C1sco12345
 
@@ -502,9 +503,10 @@ end
 wr
 ```
 
-csr2
+
 
 ```
+csr2
 ssh admin@198.18.134.12
 password = C1sco12345
 
@@ -519,6 +521,7 @@ Now we can learn our two CSR routers from the Devnet Express DNAv3 Dcloud pod.
 
 ```
 genie learn all --testbed-file testbeds/mylab.yaml --output tests/mylab
+
 ```
 Ouput truncated:
 
@@ -558,9 +561,10 @@ Learning '['interface', 'ospf', 'routing', 'vlan']' on devices '['csr1', 'csr2']
 ```
 let's compare the current state to that handy baseline of "normal". We're going to ask Genie to give us any *diff*-erences. 
 
-	```bash 
-	genie diff tests/mylab tests/myospf1 --output diffs/myopsf1
-	```
+```
+genie diff tests/mylab tests/myospf1 --output diffs/myopsf1
+
+```
 Output truncated:
 
 ```
@@ -577,15 +581,18 @@ Review Diff:
 
 ```
 more diffs/myopsf1/diff_routing_iosxe_csr1_ops.txt 
+
 ```
+
 At this point we see just business as usual ospf updates.
 
 Now lets make a change and see it recorded in another diff.
 
+
+
 ```
 csr1
 
-```
 ssh admin@198.18.134.11
 password = C1sco12345
 conf t
@@ -633,6 +640,7 @@ Examine the diff files:
 ```
 more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt 
 ```
+
 For example the output of this file indicates the loopback was removed from OSPF on CSR1:
 
 ```
