@@ -3,10 +3,11 @@
 
 If you haven't run across [pyATS/Genie](https://developer.cisco.com/pyats) yet, the quick description is that they are the network verification tooling developed inside Cisco for internal engineering to test releases of IOS XE, NX-OS and, IOS XR that has been released for **[anyone to use completely free](https://developer.cisco.com/docs/pyats/#!requirements)**.  
 
-Learn more from Hank Preston and Devnet: "I've [talked, blogged, and used](https://developer.cisco.com/netdevops/live/#s01) them for awhile now through native Python, Robot, and other interfaces.  And while I've always been impressed by the tooling, there was always a bit of a bar of konwledge required in these languages, and computer developement that made them difficult for brand new network automation engineers to feel comfortable jumping into." 
+Learn more from Hank Preston and Devnet: https://developer.cisco.com/netdevops/live/#s01 
 
 
-## Table of Contents
+
+## Table of Contents for the modified labs for use with Devnet Express DNACv3 in Dcloud pods
 * [Preperation](#preperation)
 * [Network Topology](#network-topology)
 * [Lab 1: Users report Problem Communicating from Server-1 to Server-3](#demo-1-users-report-problem-communicating-from-server-1-to-server-3)
