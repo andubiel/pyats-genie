@@ -517,7 +517,7 @@ end
 wr
 ```
 
-Now we can learn our two CSR routers from the Devnet Express DNAv3 Dcloud pod.
+Now we can learn from our two CSR routers from the Devnet Express DNAv3 Dcloud pod.
 
 ```
 genie learn all --testbed-file testbeds/mylab.yaml --output tests/mylab
@@ -559,7 +559,7 @@ Learning '['interface', 'ospf', 'routing', 'vlan']' on devices '['csr1', 'csr2']
 |  -   Log: tests/myospf1/connection_csr1.txt                                  |
 |------------------------------------------------------------------------------|
 ```
-let's compare the current state to that handy baseline of "normal". We're going to ask Genie to give us any *diff*-erences. 
+let's compare the current state to that handy baseline of "mylab". We're going to ask Genie to give us any *diff*-erences. 
 
 ```
 genie diff tests/mylab tests/myospf1 --output diffs/myopsf1
@@ -584,9 +584,9 @@ more diffs/myopsf1/diff_routing_iosxe_csr1_ops.txt
 
 ```
 
-At this point we see just business as usual ospf updates.
+At this point we see in the diff_routing_iosxe_csr1_ops.txt that the only changes are the normal ospf updates.
 
-Now lets make a change and see it recorded in another diff.
+Now lets make a change to csr1 and see it recorded in another diff.
 
 
 
@@ -601,12 +601,12 @@ no network 10.11.0.0 0.0.0.255 area 0
 end
 wr
 ```
-Learn OPSF config again. Make sure you are in genie-cli-1 directory
+Lets Learn the OPSF config again. Make sure you are in genie-cli-1 directory
 
 ```
 genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf2
 ```
-Now we can do a diff:
+Now we can do a new diff:
 
 ```
 genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
