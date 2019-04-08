@@ -15,7 +15,7 @@ Learn more from Hank Preston and Devnet: "I've [talked, blogged, and used](https
 * [Lab 3: What exactly is happening under the hood?](#demo-3-what-exactly-is-happening-under-the-hood)
 * [lab 4: CLI Commands made better with Genie Parse](#demo-4-cli-commands-made-better-with-genie-parse)
 * [lab 5: Run PyATS and Genie in your POD with CSR routers
-* 
+
 
 ## Preperation
 This lab can run "as is" using the following dcloud pod https://dcloud.cisco.com/ Search for Devnet Express DNAv3. Pods in dcloud are reservable for several days.
@@ -533,3 +533,118 @@ Learning '['acl', 'arp', 'bgp', 'dot1x', 'fdb', 'hsrp', 'igmp', 'interface', 'la
 |  -  Device Console: tests/mylab/acl_iosxe_csr1_console.txt                   |
 |------------------------------------------------------------------------------|
 ```
+Next we can hone into the OSPF changes made thus far: 
+
+```
+genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf1
+```
+Output truncated:
+
+```
+(venv) andubiel@ANDUBIEL-M-70ZF:~/Downloads/code/netdevops_demos/genie-cli-1$ genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf1
+
+Learning '['interface', 'ospf', 'routing', 'vlan']' on devices '['csr1', 'csr2']'
+100%|█████████████████████████████████████████████████████████████████████████| 4/4 [00:10<00:00,  2.20s/it]
++==============================================================================+
+| Genie Learn Summary for device csr1                                          |
++==============================================================================+
+|  Connected to csr1                                                           |
+|  -   Log: tests/myospf1/connection_csr1.txt                                  |
+|------------------------------------------------------------------------------|
+```
+let's compare the current state to that handy baseline of "normal". We're going to ask Genie to give us any *diff*-erences. 
+
+	```bash 
+	genie diff tests/mylab tests/myospf1 --output diffs/myopsf1
+	```
+Output truncated:
+```
+File: routing_iosxe_csr2_ops.txt                                            |
+|   - Diff can be found at diffs/myopsf1/diff_routing_iosxe_csr2_ops.txt       |
+|------------------------------------------------------------------------------|
+
+|------------------------------------------------------------------------------|
+|  File: routing_iosxe_csr1_ops.txt                                            |
+|   - Diff can be found at diffs/myopsf1/diff_routing_iosxe_csr1_ops.txt       |
+|------------------------------------------------------------------------------
+```
+Review Diff:
+```
+more diffs/myopsf1/diff_routing_iosxe_csr1_ops.txt 
+```
+At this point we see just business as usual ospf updates.
+
+Now lets make a change and see it recorded in another diff.
+
+```
+csr1
+```
+ssh admin@198.18.134.11
+password = C1sco12345
+conf t
+router ospf 100
+no network 10.11.0.0 0.0.0.255 area 0
+end
+wr
+```
+Learn OPSF config again. Make sure you are in genie-cli-1 directory
+
+```
+genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf2
+```
+Now we can do a diff:
+```
+genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
+```
+Output truncated:
+```
+genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
+1it [00:00, 12.44it/s]
++==============================================================================+
+| Genie Diff Summary between directories tests/myospf1/ and tests/myospf2/     |
++==============================================================================+
+|                                                               |
+|------------------------------------------------------------------------------|
+|  File: routing_iosxe_csr2_ops.txt                                            |
+|   - Diff can be found at diffs/opsf2/diff_routing_iosxe_csr2_ops.txt         |
+|------------------------------------------------------------------------------|
+|  File: ospf_iosxe_csr1_ops.txt                                               |
+|   - Diff can be found at diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt            |
+|------------------------------------------------------------------------------|
+                                      |
+|------------------------------------------------------------------------------|
+|  File: routing_iosxe_csr1_ops.txt                                            |
+|   - Diff can be found at diffs/opsf2/diff_routing_iosxe_csr1_ops.txt         |
+|------------------------------------------------------------------------------|
+|                                                             |
+|------------------------------------------------------------------------------|
+```
+Examine the diff files:
+```
+more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt 
+```
+For example the output of this file indicates the loopback was removed from OSPF on CSR1:
+```
+more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt
+--- tests/myospf1/ospf_iosxe_csr1_ops.txt
++++ tests/myospf2/ospf_iosxe_csr1_ops.txt
+info:
+ vrf:
+  default:
+   address_family:
+    ipv4:
+     instance:
+      100:
+       areas:
+        0.0.0.0:
+         interfaces:
+-          Loopback15:
+-           bfd:
+-            enable: False
+-           cost: 1
+-           demand_circuit: False
+-           enable: True
+-           interface_type: loopback
+-           name: Loopback15
+```
+
