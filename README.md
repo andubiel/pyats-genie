@@ -485,6 +485,7 @@ We've already explored how Genie runs CLI commands and magically turns the text 
 
 Let's configure some Ospf routing in our CSR routers:
 csr1
+
 ```
 ssh admin@198.18.134.11
 password = C1sco12345
@@ -502,6 +503,7 @@ wr
 ```
 
 csr2
+
 ```
 ssh admin@198.18.134.12
 password = C1sco12345
@@ -519,6 +521,7 @@ Now we can learn our two CSR routers from the Devnet Express DNAv3 Dcloud pod.
 genie learn all --testbed-file testbeds/mylab.yaml --output tests/mylab
 ```
 Ouput truncated:
+
 ```
 Learning '['acl', 'arp', 'bgp', 'dot1x', 'fdb', 'hsrp', 'igmp', 'interface', 'lag', 'lisp', 'lldp', 'mcast', 'mld', 'msdp', 'nd', 'ntp', 'ospf', 'pim', 'platform', 'prefix_list', 'rip', 'route_policy', 'routing', 'static_routing', 'stp', 'vlan', 'vrf', 'vxlan', 'config']' on devices '['csr1', 'csr2']'
 100%|███████████████████████████████████████████████████████████████████████| 29/29 [01:18<00:00,  1.24s/it]
@@ -538,6 +541,7 @@ Next we can hone into the OSPF changes made thus far:
 ```
 genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf1
 ```
+
 Output truncated:
 
 ```
@@ -558,6 +562,7 @@ let's compare the current state to that handy baseline of "normal". We're going 
 	genie diff tests/mylab tests/myospf1 --output diffs/myopsf1
 	```
 Output truncated:
+
 ```
 File: routing_iosxe_csr2_ops.txt                                            |
 |   - Diff can be found at diffs/myopsf1/diff_routing_iosxe_csr2_ops.txt       |
@@ -569,6 +574,7 @@ File: routing_iosxe_csr2_ops.txt                                            |
 |------------------------------------------------------------------------------
 ```
 Review Diff:
+
 ```
 more diffs/myopsf1/diff_routing_iosxe_csr1_ops.txt 
 ```
@@ -578,6 +584,7 @@ Now lets make a change and see it recorded in another diff.
 
 ```
 csr1
+
 ```
 ssh admin@198.18.134.11
 password = C1sco12345
@@ -593,10 +600,12 @@ Learn OPSF config again. Make sure you are in genie-cli-1 directory
 genie learn interface ospf routing vlan --testbed-file testbeds/mylab.yaml --output tests/myospf2
 ```
 Now we can do a diff:
+
 ```
 genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
 ```
 Output truncated:
+
 ```
 genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
 1it [00:00, 12.44it/s]
@@ -620,10 +629,12 @@ genie diff tests/myospf1 tests/myospf2 --output diffs/opsf2
 |------------------------------------------------------------------------------|
 ```
 Examine the diff files:
+
 ```
 more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt 
 ```
 For example the output of this file indicates the loopback was removed from OSPF on CSR1:
+
 ```
 more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt
 --- tests/myospf1/ospf_iosxe_csr1_ops.txt
