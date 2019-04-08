@@ -1,0 +1,62 @@
+testbed:
+
+  name: dnalab
+
+
+devices:
+
+  csr1:
+    alias: csr1
+    os: iosxe
+    type: CSR1000v
+    tacacs:
+        username: admin
+    passwords:
+        tacacs: C1sco12345
+
+    connections:
+      defaults:
+        class: unicon.Unicon
+      console:
+        ip: 198.18.134.11
+        protocol: ssh
+        port: 22
+    custom:
+      abstraction:
+        order: [os, type]
+
+  csr2:
+     alias: csr2
+     os: iosxe
+     type: CSR1000v
+     tacacs:
+         username: admin
+     passwords:
+         tacacs: C1sco12345
+
+     connections:
+      defaults:
+        class: unicon.Unicon
+      console:
+        ip: 198.18.134.12
+        protocol: ssh
+        port: 22
+     custom:
+       abstraction:
+         order: [os, type]
+
+
+topology:
+  csr1:
+    interfaces:
+      GigabitEthernet1:
+        ipv4: 198.18.134.11
+        link: flat
+        type: ethernet
+
+  csr2:
+    interfaces:
+      GigabitEthernet1:
+        ipv4: 198.18.134.12
+        link: flat
+        type: ethernet
