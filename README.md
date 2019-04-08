@@ -641,7 +641,7 @@ Examine the diff files:
 more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt 
 ```
 
-For example the output of this file indicates the loopback was removed from OSPF on CSR1:
+For example the output of this file indicates the loopback15 interface was removed from OSPF 100 routing proccess on CSR1:
 
 ```
 more diffs/opsf2/diff_ospf_iosxe_csr1_ops.txt
